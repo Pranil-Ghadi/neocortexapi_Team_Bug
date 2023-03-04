@@ -112,9 +112,7 @@ namespace WorkingWithSDR
 
         private static void SimilarityResult(int arr1, int arr2, Dictionary<double, int[]> sdrs, String folder)                // Function to check similarity between Inputs 
         {
-            //var folder1 = @"NEWTestFiles\NEWScalarEncoderResults";
-
-            //Directory.CreateDirectory(folder1);
+            
 
             List<int[,]> arrayOvr = new List<int[,]>();
 
