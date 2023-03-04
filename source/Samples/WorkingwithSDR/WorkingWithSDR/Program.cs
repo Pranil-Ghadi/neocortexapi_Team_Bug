@@ -1,4 +1,5 @@
-﻿using NeoCortex;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoCortex;
 using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Utility;
@@ -59,7 +60,9 @@ namespace WorkingWithSDR
 
         private static void ScalarEncoderTest(int[] inputs)
         {
-            var outFolder = @"..\..\..\NEWTestFiles\NEWScalarEncoderResults";
+            var outFolder1 = @"NEWTestFiles\NEWScalarEncoderResults";
+
+            Directory.CreateDirectory(outFolder1);
 
             ScalarEncoder encoder = new ScalarEncoder(new Dictionary<string, object>()
             {
@@ -85,7 +88,7 @@ namespace WorkingWithSDR
 
                 int[,] twoDimenArray = ArrayUtils.Make2DArray<int>(result, (int)Math.Sqrt(result.Length), (int)Math.Sqrt(result.Length));
                 int[,] twoDimArray = ArrayUtils.Transpose(twoDimenArray);
-                NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{outFolder}\\{input}.png", Color.PaleGreen, Color.Blue, text: input.ToString());
+                NeoCortexUtils.DrawBitmap(twoDimArray, 1024, 1024, $"{outFolder1}\\{input}.png", Color.PaleGreen, Color.Blue, text: input.ToString());
 
                 sdrs.Add(input, result);
 
@@ -104,11 +107,14 @@ namespace WorkingWithSDR
             String a = Console.ReadLine();
             String b = Console.ReadLine();
 
-            SimilarityResult(Convert.ToInt32(a), Convert.ToInt32(b), sdrs, outFolder);
+            SimilarityResult(Convert.ToInt32(a), Convert.ToInt32(b), sdrs, outFolder1);
         }
 
         private static void SimilarityResult(int arr1, int arr2, Dictionary<double, int[]> sdrs, String folder)                // Function to check similarity between Inputs 
         {
+            //var folder1 = @"NEWTestFiles\NEWScalarEncoderResults";
+
+            //Directory.CreateDirectory(folder1);
 
             List<int[,]> arrayOvr = new List<int[,]>();
 
@@ -121,18 +127,20 @@ namespace WorkingWithSDR
 
             Console.WriteLine("SDR[w] = ");
 
+            
+
             Console.WriteLine(Helpers.StringifyVector(sdrs[w]));
 
             var Overlaparray = SdrRepresentation.OverlapArraFun(sdrs[h], sdrs[w]);
             int[,] twoDimenArray2 = ArrayUtils.Make2DArray<int>(Overlaparray, (int)Math.Sqrt(Overlaparray.Length), (int)Math.Sqrt(Overlaparray.Length));
             int[,] twoDimArray1 = ArrayUtils.Transpose(twoDimenArray2);
-            NeoCortexUtils.DrawBitmap(twoDimArray1, 1024, 1024, $"{folder}\\Overlap_Union\\Overlap_{h}_{w}.png", Color.PaleGreen, Color.Red, text: $"Overlap_{h}_{w}.png");
+            NeoCortexUtils.DrawBitmap(twoDimArray1, 1024, 1024, $"{ folder}\\Overlap_{h}_{w}.png", Color.PaleGreen, Color.Red, text: $"Overlap_{h}_{w}.png");
 
             var unionArr = sdrs[h].Union(sdrs[w]).ToArray();
             int[,] twoDimenArray4 = ArrayUtils.Make2DArray<int>(unionArr, (int)Math.Sqrt(unionArr.Length), (int)Math.Sqrt(unionArr.Length));
             int[,] twoDimArray3 = ArrayUtils.Transpose(twoDimenArray4);
 
-            NeoCortexUtils.DrawBitmap(twoDimArray3, 1024, 1024, $"{folder}\\Overlap_Union\\Union_{h}_{w}.png", Color.PaleGreen, Color.Green, text: $"Overlap_{h}_{w}.png");
+            NeoCortexUtils.DrawBitmap(twoDimArray3, 1024, 1024, $"{folder}\\Union_{h}_{w}.png", Color.PaleGreen, Color.Green, text: $"Overlap_{h}_{w}.png");
 
         }
     }
