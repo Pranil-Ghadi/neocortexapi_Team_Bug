@@ -61,9 +61,10 @@ namespace WorkingWithSDR
         private static void ScalarEncoderTest(int[] inputs)
         {
             var outFolder1 = @"NEWTestFiles\NEWScalarEncoderResults";
+            var outFolder2 = @"Overlap_Union";
 
             Directory.CreateDirectory(outFolder1);
-
+            Directory.CreateDirectory(outFolder2);
             ScalarEncoder encoder = new ScalarEncoder(new Dictionary<string, object>()
             {
                 { "W", 3},       // 2% Approx 
@@ -107,7 +108,7 @@ namespace WorkingWithSDR
             String a = Console.ReadLine();
             String b = Console.ReadLine();
 
-            SimilarityResult(Convert.ToInt32(a), Convert.ToInt32(b), sdrs, outFolder1);
+            SimilarityResult(Convert.ToInt32(a), Convert.ToInt32(b), sdrs, outFolder2);
         }
 
         private static void SimilarityResult(int arr1, int arr2, Dictionary<double, int[]> sdrs, String folder)                // Function to check similarity between Inputs 
