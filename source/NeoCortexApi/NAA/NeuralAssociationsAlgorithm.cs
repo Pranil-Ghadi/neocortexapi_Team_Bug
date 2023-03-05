@@ -291,7 +291,7 @@ namespace NeoCortexApi
             // New segments are created on every cell owner of the inactive segment.
             // In a case of HTM-TM, new segment is created only at the leastUsedPotentialCell of the active mini-column.
             foreach (var inactiveSeg in inactiveSegments)
-            {            
+            {
                 FormNewSynapses(associatedArea, inactiveSeg);
 
                 //Cell segOwnerCell = inactiveSeg.ParentCell;
@@ -357,7 +357,7 @@ namespace NeoCortexApi
             {
                 foreach (var syn2 in presynapticCell.ReceptorSynapses)
                 {
-                    if(syn1 == syn2) 
+                    if (syn1 == syn2)
                         return true;
                 }
             }
@@ -468,11 +468,11 @@ namespace NeoCortexApi
         /// If the permamence is below EPSILON, synapse is destroyed.
         /// </summary>
         /// <param name="conn"></param>
-        /// <param name="segment">The segment to adapt.</param>
-        /// <param name="prevActiveCells">List of active cells in the current cycle (calculated in the previous cycle).</param>
-        public void AdaptSegment(Segment segment, ICollection<Cell> prevActiveCells)
+        /// <param name="segment">The segment to adapt. The typically belongs to this areas Y, where associating cells belong to area X.</param>
+        /// <param name="associatingActiveCells">List of active cells in the current cycle that will be associated with the segment.</param>
+        public void AdaptSegment(Segment segment, ICollection<Cell> associatingActiveCells)
         {
-            // Destroying a synapse modifies the set that we're iterating through.
+            // The list of synapses that will be destroyed.
             List<Synapse> synapsesToDestroy = new List<Synapse>();
 
             foreach (Synapse presynapticCellSynapse in segment.Synapses)
@@ -481,7 +481,7 @@ namespace NeoCortexApi
 
                 //
                 // If synapse's presynaptic cell was active in the previous cycle then streng it.
-                if (prevActiveCells.Contains(presynapticCellSynapse.GetPresynapticCell()))
+                if (associatingActiveCells.Contains(presynapticCellSynapse.GetPresynapticCell()))
                 {
                     permanence += this._cfg.PermanenceIncrement;
                 }
@@ -541,7 +541,7 @@ namespace NeoCortexApi
         {
             if (segment.GetType() == typeof(ApicalDendrite))
                 KillSegment<ApicalDendrite>(segment as ApicalDendrite, segment.ParentCell.ApicalDendrites);
-            if (segment.GetType() == typeof(DistalDendrite))
+            else if (segment.GetType() == typeof(DistalDendrite))
                 KillSegment<DistalDendrite>(segment as DistalDendrite, segment.ParentCell.DistalDendrites);
             else
                 throw new ArgumentException($"Unsuproted segment type: {segment.GetType().Name}");
@@ -598,8 +598,6 @@ namespace NeoCortexApi
             removingCandidates = removingCandidates.OrderBy(c => c).ToList();
 
             //
-            // Enumarates all synapses in a segment and remove winner-cells from
-            // list of removingCandidates if they are presynaptic winners cells.
             // So, we will create synapses only from cells, which do not already have synaptic connection to the segment.          
             foreach (Synapse synapse in segment.Synapses)
             {
@@ -633,7 +631,7 @@ namespace NeoCortexApi
         /// <param name="presynapticCell">the source <see cref="Cell"/>.</param>
         /// <param name="permanence">the initial permanence.</param>
         /// <returns>the created <see cref="Synapse"/>.</returns>
-        protected  Synapse CreateSynapse(Segment segment, Cell presynapticCell, double permanence, int maxSynapsesPerSegment)
+        protected Synapse CreateSynapse(Segment segment, Cell presynapticCell, double permanence, int maxSynapsesPerSegment)
         {
             while (segment.Synapses.Count >= maxSynapsesPerSegment)
             {
@@ -656,6 +654,23 @@ namespace NeoCortexApi
 
 
         /// <summary>
+        /// Calculates the synaptic energy of the segment. SUmmirizes all permanences of apical segments.
+        /// </summary>
+        /// <returns></returns>
+        public double GetApicalSynapticEnergy()
+        {
+            double energy = 0;
+
+            foreach (var seg in this.ActiveApicalSegments)
+            {
+                seg.Synapses.ForEach(s => energy += s.Permanence);
+            }
+
+            return energy;
+        }
+
+
+        /// <summary>
         /// Gets the trace of the _area in the current cycle.
         /// </summary>
         /// <returns></returns>
@@ -665,7 +680,11 @@ namespace NeoCortexApi
 
             sb.AppendLine($"Iteration {_iteration}");
 
-            sb.AppendLine($"Active Apical Segments: {ActiveApicalSegments.Count}, Matching Apical Segments: {MatchingApicalSegments.Count}, Inactive Apical Segments: {InactiveApicalSegments.Count}, Active Cells without Apical Segments: {ActiveCellsWithoutApicalSegments.Count}");
+            sb.AppendLine($"Active Apical Segments in area {this._area.Name}: {ActiveApicalSegments.Count}");
+            sb.AppendLine($"Matching Apical Segments: {MatchingApicalSegments.Count}");
+            sb.AppendLine($"Inactive Apical Segments: {InactiveApicalSegments.Count}");
+            sb.AppendLine($"Active Cells without Apical Segments: {ActiveCellsWithoutApicalSegments.Count}.");
+            sb.AppendLine($"Synaptic Energy = {GetApicalSynapticEnergy()}");
 
             foreach (var cell in this._area.ActiveCells)
             {
