@@ -62,8 +62,10 @@ namespace WorkingWithSDR
         {
             var outFolder1 = @"NEWTestFiles\NEWScalarEncoderResults";
 
-            Directory.CreateDirectory(outFolder1);
+            var outFolder2 = @"Overlap_Union";
 
+            Directory.CreateDirectory(outFolder1);
+            Directory.CreateDirectory(outFolder2);
             ScalarEncoder encoder = new ScalarEncoder(new Dictionary<string, object>()
             {
                 { "W", 3},       // 2% Approx 
@@ -107,14 +109,14 @@ namespace WorkingWithSDR
             String a = Console.ReadLine();
             String b = Console.ReadLine();
 
-            SimilarityResult(Convert.ToInt32(a), Convert.ToInt32(b), sdrs, outFolder1);
+
+            SimilarityResult(Convert.ToInt32(a), Convert.ToInt32(b), sdrs, outFolder2);
         }
 
         private static void SimilarityResult(int arr1, int arr2, Dictionary<double, int[]> sdrs, String folder)                // Function to check similarity between Inputs 
         {
-            //var folder1 = @"NEWTestFiles\NEWScalarEncoderResults";
 
-            //Directory.CreateDirectory(folder1);
+            
 
             List<int[,]> arrayOvr = new List<int[,]>();
 
@@ -140,7 +142,8 @@ namespace WorkingWithSDR
             int[,] twoDimenArray4 = ArrayUtils.Make2DArray<int>(unionArr, (int)Math.Sqrt(unionArr.Length), (int)Math.Sqrt(unionArr.Length));
             int[,] twoDimArray3 = ArrayUtils.Transpose(twoDimenArray4);
 
-            NeoCortexUtils.DrawBitmap(twoDimArray3, 1024, 1024, $"{folder}\\Union_{h}_{w}.png", Color.PaleGreen, Color.Green, text: $"Overlap_{h}_{w}.png");
+
+            NeoCortexUtils.DrawBitmap(twoDimArray3, 1024, 1024, $"{folder}\\Union_{h}_{w}.png", Color.PaleGreen, Color.Green, text: $"Union_{h}_{w}.png");
 
         }
     }
