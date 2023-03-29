@@ -3,6 +3,7 @@ using NeoCortex;
 using NeoCortexApi;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Utility;
+using Org.BouncyCastle.Crypto.Modes;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,7 +19,13 @@ namespace WorkingWithSDR
         {
             var outFolder = @"EncoderOutputImages\ScalerEncoderOutput";
 
-            int[] d = new int[] { 1, 4, 5, 7, 8, 9 };
+            Console.Write("Please enter First Number: ");
+            int ch1 = Convert.ToInt16(Console.ReadLine());
+            Console.Write("Please enter Second Number: ");
+            int ch2 = Convert.ToInt16(Console.ReadLine());
+            
+
+            int[] d = new int[] {ch1, ch2 };
             ScalarEncoderTest(d);
 
             Directory.CreateDirectory(outFolder);
@@ -136,11 +143,19 @@ namespace WorkingWithSDR
             int[,] twoDimArray1 = ArrayUtils.Transpose(twoDimenArray2);
             NeoCortexUtils.DrawBitmap(twoDimArray1, 1024, 1024, $"{ folder}\\Overlap_{h}_{w}.png", Color.PaleGreen, Color.Red, text: $"Overlap_{h}_{w}.png");
 
+            double[,] twoDimenArray4 = ArrayUtils.Make2DArray<int>(Overlaparray, (int)Math.Sqrt(Overlaparray.Length), (int)Math.Sqrt(Overlaparray.Length));
+            double[,] twoDimArray3 = ArrayUtils.Transpose(twoDimenArray4);
+
+
+            NeoCortexUtils.DrawHeatmaps(twoDimArray3, $"{folder}_overlap.png", 1024, 1024, Color.Red, Color.Red, Color.Green);
+
+
             var unionArr = sdrs[h].Union(sdrs[w]).ToArray();
             int[,] twoDimenArray4 = ArrayUtils.Make2DArray<int>(unionArr, (int)Math.Sqrt(unionArr.Length), (int)Math.Sqrt(unionArr.Length));
             int[,] twoDimArray3 = ArrayUtils.Transpose(twoDimenArray4);
 
             NeoCortexUtils.DrawBitmap(twoDimArray3, 1024, 1024, $"{folder}\\Union_{h}_{w}.png", Color.PaleGreen, Color.Green, text: $"Overlap_{h}_{w}.png");
+
 
         }
     }
