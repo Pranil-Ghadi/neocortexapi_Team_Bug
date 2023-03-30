@@ -19,7 +19,7 @@ namespace WorkingWithSDR
             var outFolder = @"EncoderOutputImages\ScalerEncoderOutput";
 
             //int[] d = new int[] { 1, 4, 5, 7, 8, 9 };
-            Console.WriteLine("Welcome to the SDR Representation project. Please enter two numbers to find SDR as Indices and Text, their Bitmap, Overlap and Union");
+            Console.WriteLine("Welcome to the SDR Representation project. Please enter two numbers to find SDR as Indices and Text, Bitmaps, Overlap, Union and Intersection");
             Console.Write("Please enter First Number: ");
             int ch1 = Convert.ToInt16(Console.ReadLine());
             Console.Write("Please enter Second Number: ");
@@ -141,18 +141,45 @@ namespace WorkingWithSDR
             Console.WriteLine(Helpers.StringifyVector(sdrs[w]));
 
             var Overlaparray = SdrRepresentation.OverlapArraFun(sdrs[h], sdrs[w]);
+            Console.WriteLine("SDR of Overlap = ");
             Console.WriteLine(Helpers.StringifyVector(Overlaparray));
             int[,] twoDimenArray2 = ArrayUtils.Make2DArray<int>(Overlaparray, (int)Math.Sqrt(Overlaparray.Length), (int)Math.Sqrt(Overlaparray.Length));
             int[,] twoDimArray1 = ArrayUtils.Transpose(twoDimenArray2);
             NeoCortexUtils.DrawBitmap(twoDimArray1, 1024, 1024, $"{folder}\\Overlap_{h}_{w}.png", Color.PaleGreen, Color.Red, text: $"Overlap_{h}_{w}.png");
 
 
-            var unionArr = sdrs[h].Union(sdrs[w]).ToArray();
+            var unionArr = UnionSDR(sdrs[h], sdrs[w]).ToArray();
+            Console.WriteLine("SDR of Union = ");
+            Console.WriteLine(Helpers.StringifyVector(unionArr));
             int[,] twoDimenArray4 = ArrayUtils.Make2DArray<int>(unionArr, (int)Math.Sqrt(unionArr.Length), (int)Math.Sqrt(unionArr.Length));
             int[,] twoDimArray3 = ArrayUtils.Transpose(twoDimenArray4);
 
             NeoCortexUtils.DrawBitmap(twoDimArray3, 1024, 1024, $"{folder}\\Union_{h}_{w}.png", Color.PaleGreen, Color.Green, text: $"Union_{h}_{w}.png");
+            SdrRepresentation.DrawIntersections(twoDimArray3, twoDimArray1, 100, $"{folder}\\Intersection of Union and Overlap of {h}_{w}.png", Color.Black, Color.Gray, text: $"Intersection.png");
 
         }
+
+        public static int[] UnionSDR(int[] arr1, int[] arr2)
+        {
+            if (arr1.Length != arr2.Length)
+                throw new Exception("SDR1 and SDR2 should be of same length");
+
+            int[] union = new int[arr1.Length];
+
+            for (int i = 0; i < arr1.Length; i++)
+            {
+
+                if (arr1[i] == 0 && arr2[i] == 0)
+                {
+                    union[i] = 0;
+                }
+                else
+                {
+                    union[i] = 1;
+                }
+            }
+            return union;
+        }
+
     }
 }
