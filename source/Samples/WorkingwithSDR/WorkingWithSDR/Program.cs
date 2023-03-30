@@ -16,10 +16,12 @@ namespace WorkingWithSDR
     {
         public static void Main()
         {
+            /// User can directly compair two scalar values between 0 to 99.
+            
             var outFolder = @"EncoderOutputImages\ScalerEncoderOutput";
 
-            //int[] d = new int[] { 1, 4, 5, 7, 8, 9 };
-            Console.WriteLine("Welcome to the SDR Representation project. Please enter two numbers to find SDR as Indices and Text, Bitmaps, Overlap, Union and Intersection");
+            //int[] d = new int[] { 1, 4, 5, 7, 8, 9 };     
+            Console.WriteLine("Welcome to the SDR Representation project. Please enter two numbers (0-99) to find SDR as Indices and Text, Bitmaps, Overlap, Union and Intersection");
             Console.Write("Please enter First Number: ");
             int ch1 = Convert.ToInt16(Console.ReadLine());
             Console.Write("Please enter Second Number: ");
@@ -107,10 +109,12 @@ namespace WorkingWithSDR
 
             // <summary>
             /// Calculate all required results.
-            /// 1. Overlap and Union of the Binary arrays of two scalar values
+            /// 1. Overlap and Union of the Binary arrays of two scalar values.
             ///    It cross compares the binary arrays  of any of the two scalar values User enters.
-            /// 2. Creates bitmaps of the overlaping and non-overlaping regions of the two binary arrays selected by the User.
+            /// 2. Creates bitmaps of the overlaping and non-overlaping regions of the two binary arrays entered by the User.
+            /// 3. Creates bitmaps of interestion of Overlap and Union of two values.
             /// </summary>
+            
             //Console.WriteLine("Encoder Binary array Created");
             // Console.WriteLine("Enter the two elements you want to Compare");
             // String a = Console.ReadLine();
@@ -121,7 +125,7 @@ namespace WorkingWithSDR
             SimilarityResult(a, b, sdrs, outFolder1);
         }
 
-        private static void SimilarityResult(int arr1, int arr2, Dictionary<double, int[]> sdrs, String folder)                // Function to check similarity between Inputs 
+        private static void SimilarityResult(int arr1, int arr2, Dictionary<double, int[]> sdrs, String folder)              // Function to check similarity between Inputs 
         {
 
 
@@ -147,7 +151,7 @@ namespace WorkingWithSDR
             int[,] twoDimArray1 = ArrayUtils.Transpose(twoDimenArray2);
             NeoCortexUtils.DrawBitmap(twoDimArray1, 1024, 1024, $"{folder}\\Overlap_{h}_{w}.png", Color.PaleGreen, Color.Red, text: $"Overlap_{h}_{w}.png");
 
-
+            //var unionArr = sdrs[h].Union(sdrs[w]).ToArray();                              //This function was not working. so, new Union function is created.
             var unionArr = UnionSDR(sdrs[h], sdrs[w]).ToArray();
             Console.WriteLine("SDR of Union = ");
             Console.WriteLine(Helpers.StringifyVector(unionArr));
@@ -159,10 +163,9 @@ namespace WorkingWithSDR
 
         }
 
-        public static int[] UnionSDR(int[] arr1, int[] arr2)
+        public static int[] UnionSDR(int[] arr1, int[] arr2)                        // To find union of of the Binary arrays of two scalar values.
         {
-            if (arr1.Length != arr2.Length)
-                throw new Exception("SDR1 and SDR2 should be of same length");
+            
 
             int[] union = new int[arr1.Length];
 
